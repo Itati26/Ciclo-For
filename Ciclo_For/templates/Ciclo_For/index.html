@@ -21,36 +21,20 @@
             margin-bottom: 20px;
         }
 
-        .contenedor {
-            display: flex;
-            gap: 20px;
-        }
-
-        .panel {
-            background: #fff0f2;
-            border: 2px solid #ff6b81;
-            border-radius: 12px;
-            padding: 10px;
-            width: 250px;
-            min-height: 150px;
+        form {
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
-        }
-
-        .panel h3 {
-            color: #ff6b81;
-            margin: 0 0 8px 0;
-            font-size: 16px;
-            text-align: center;
+            align-items: center;
+            gap: 8px;
+            width: 320px;
         }
 
         textarea {
             width: 100%;
-            height: 120px;
-            border: 1px solid #ff6b81;
-            border-radius: 8px;
-            padding: 8px;
+            height: 200px;
+            border: 2px solid #ff6b81;
+            border-radius: 12px;
+            padding: 10px;
             font-size: 14px;
             resize: none;
             background: #fff7f8;
@@ -72,47 +56,26 @@
             cursor: pointer;
             font-size: 14px;
             transition: all 0.2s ease-in-out;
-            align-self: center;
         }
 
         button:hover {
             background: #ff4757;
             transform: scale(1.05);
         }
-
-        pre {
-            background: #fff7f8;
-            border: 1px solid #ff6b81;
-            border-radius: 8px;
-            padding: 8px;
-            flex: 1;
-            white-space: pre-wrap;
-            font-size: 14px;
-            color: #333;
-            overflow-y: auto;
-        }
     </style>
 </head>
 <body>
     <h2>F O R</h2>
-    <div class="contenedor">
-        <div class="panel">
-            <h3>Ciclo FOR</h3>
-            <form id="formulario">
-                <textarea id="codigo" name="codigo" placeholder="Escribe tu código aquí..."></textarea>
-                <button type="submit">Aceptar</button>
-            </form>
-        </div>
-        <div class="panel">
-            <h3>Iteraciones</h3>
-            <pre id="iteraciones"></pre>
-        </div>
-    </div>
+    <form id="formulario">
+        <textarea id="codigo" name="codigo" placeholder="Escribe tu código aquí..."></textarea>
+        <button type="submit">Ejecutar</button>
+    </form>
 
     <script>
         document.getElementById("formulario").addEventListener("submit", async function(e) {
             e.preventDefault();
-            const codigo = document.getElementById("codigo").value;
+            const textarea = document.getElementById("codigo");
+            const codigo = textarea.value;
             try {
                 const response = await fetch("/ejecutar/", {
                     method: "POST",
@@ -125,16 +88,14 @@
                 const data = await response.json();
 
                 if (data.error) {
-                    document.getElementById("iteraciones").textContent = "❌ Error: " + data.error;
+                    textarea.value = codigo + "\n\n❌ Error: " + data.error;
                 } else {
                     // Limpiar formato: quitar corchetes, comillas y paréntesis
-                    const limpio = data.iteraciones.map(it => {
-                        return it.replace(/[\[\]{}'"]/g, "");
-                    }).join("\n");
-                    document.getElementById("iteraciones").textContent = limpio;
+                    const limpio = data.iteraciones.map(it => it.replace(/[\[\]{}'"]/g, "")).join("\n");
+                    textarea.value = codigo + "\n\n--- Resultados ---\n" + limpio;
                 }
             } catch (err) {
-                document.getElementById("iteraciones").textContent = "❌ Error: " + err;
+                textarea.value = codigo + "\n\n❌ Error: " + err;
             }
         });
     </script>
