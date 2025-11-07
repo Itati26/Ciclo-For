@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>mariloks :D</title>
+    <style>
+        body {
+            background-color: #f9f3f3;
+            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 50px;
+            margin: 0;
+        }
+
+        h2 {
+            color: #ff6b81;
+            margin-bottom: 20px;
+        }
+
+        .contenedor {
+            display: flex;
+            gap: 20px;
+        }
+
+        .panel {
+            background: #fff0f2;
+            border: 2px solid #ff6b81;
+            border-radius: 12px;
+            padding: 10px;
+            width: 250px;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .panel h3 {
+            color: #ff6b81;
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            border: 1px solid #ff6b81;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 14px;
+            resize: none;
+            background: #fff7f8;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: #ff4757;
+            box-shadow: 0 0 5px rgba(255, 71, 87, 0.5);
+        }
+
+        button {
+            margin-top: 8px;
+            background: #ff6b81;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease-in-out;
+            align-self: center;
+        }
+
+        button:hover {
+            background: #ff4757;
+            transform: scale(1.05);
+        }
+
+        pre {
+            background: #fff7f8;
+            border: 1px solid #ff6b81;
+            border-radius: 8px;
+            padding: 8px;
+            flex: 1;
+            white-space: pre-wrap;
+            font-size: 14px;
+            color: #333;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h2>F O R</h2>
+    <div class="contenedor">
+        <div class="panel">
+            <h3>Ciclo FOR</h3>
+            <form id="formulario">
+                <textarea id="codigo" name="codigo" placeholder="Escribe tu código aquí..."></textarea>
+                <button type="submit">Aceptar</button>
+            </form>
+        </div>
+        <div class="panel">
+            <h3>Iteraciones</h3>
+            <pre id="iteraciones"></pre>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("formulario").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const codigo = document.getElementById("codigo").value;
+            try {
+                const response = await fetch("/ejecutar/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: "codigo=" + encodeURIComponent(codigo)
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById("iteraciones").textContent = "❌ Error: " + data.error;
+                } else {
+                    // Limpiar formato: quitar corchetes, comillas y paréntesis
+                    const limpio = data.iteraciones.map(it => {
+                        return it.replace(/[\[\]{}'"]/g, "");
+                    }).join("\n");
+                    document.getElementById("iteraciones").textContent = limpio;
+                }
+            } catch (err) {
+                document.getElementById("iteraciones").textContent = "❌ Error: " + err;
+            }
+        });
+    </script>
+</body>
+</html>
